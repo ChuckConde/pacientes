@@ -1,0 +1,61 @@
+<main class="page">
+  <p class="demo-banner">
+    Demo pública con datos ficticios — los cambios no se guardan de forma permanente.
+    <button type="button" class="btn-link" (click)="resetDemoData()">Restablecer datos</button>
+  </p>
+
+  <header class="page-header">
+    <h1>Pacientes</h1>
+  </header>
+
+  <div class="field">
+    <label for="search" class="visually-hidden">Buscar paciente</label>
+    <input
+      id="search"
+      type="search"
+      placeholder="Buscar paciente..."
+      [ngModel]="searchTerm()"
+      (ngModelChange)="onSearchInput($event)"
+    />
+  </div>
+
+  <a routerLink="/pacientes/nuevo" class="btn btn-primary btn-block new-patient-btn">
+    + Nuevo paciente
+  </a>
+
+  @if (loading()) {
+    <p class="status-text">Cargando pacientes...</p>
+  } @else if (errorMessage()) {
+    <p class="error-text" role="alert">{{ errorMessage() }}</p>
+  } @else if (patients().length === 0) {
+    <p class="empty-state">
+      @if (searchTerm().trim().length > 0) {
+        No se encontraron pacientes.
+      } @else {
+        Todavía no cargaste ningún paciente.
+      }
+    </p>
+  } @else {
+    <ul class="patient-list">
+      @for (patient of patients(); track patient.id) {
+        <li>
+          <button type="button" class="card patient-card" (click)="openPatient(patient.id)">
+            <span class="patient-name">{{ patient.name }}</span>
+            <span class="patient-meta">Edad: {{ calculateAge(patient.birthDate) }} años</span>
+            @if (patient.healthInsurance) {
+              <span class="patient-meta">Obra social: {{ patient.healthInsurance }}</span>
+            }
+            <span class="patient-meta">
+              Última consulta:
+              @if (patient.lastConsultationDate) {
+                {{ patient.lastConsultationDate | date: 'dd/MM/yyyy' : 'UTC' }}
+              } @else {
+                Sin consultas registradas
+              }
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</main>

@@ -1,0 +1,49 @@
+<main class="page">
+  <a routerLink="/pacientes" class="back-link">← Volver a pacientes</a>
+
+  <h1>Nuevo paciente</h1>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="card">
+    <div class="field">
+      <label for="name">Nombre completo *</label>
+      <input id="name" type="text" formControlName="name" autocomplete="off" />
+      @if (form.controls.name.invalid && form.controls.name.touched) {
+        <p class="error-text">Este campo es obligatorio.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="birthDate">Fecha de nacimiento *</label>
+      <input
+        id="birthDate"
+        type="date"
+        formControlName="birthDate"
+        [attr.max]="todayIso"
+      />
+      @if (form.controls.birthDate.value) {
+        <p class="date-confirm">
+          {{ form.controls.birthDate.value | date: "d 'de' MMMM 'de' y" : 'UTC' }}
+        </p>
+      }
+      @if (form.controls.birthDate.hasError('required') && form.controls.birthDate.touched) {
+        <p class="error-text">Este campo es obligatorio.</p>
+      }
+      @if (form.controls.birthDate.hasError('futureDate')) {
+        <p class="error-text">La fecha no puede ser futura.</p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="healthInsurance">Obra social</label>
+      <input id="healthInsurance" type="text" formControlName="healthInsurance" autocomplete="off" />
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error-text" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" class="btn btn-primary btn-block" [disabled]="saving()">
+      {{ saving() ? 'Guardando...' : 'Guardar paciente' }}
+    </button>
+  </form>
+</main>

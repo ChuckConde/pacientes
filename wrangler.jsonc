@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pacientes-demo",
+  "compatibility_date": "2026-09-12",
+  "assets": {
+    "directory": "./dist/pacientes-pablo-app/browser",
+    "not_found_handling": "single-page-application"
+  }
+}

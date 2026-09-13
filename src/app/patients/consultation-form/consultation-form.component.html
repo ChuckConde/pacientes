@@ -1,0 +1,47 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate class="card consultation-form">
+  <div class="field">
+    <label for="consultationDate">Fecha de consulta *</label>
+    <input
+      id="consultationDate"
+      type="date"
+      formControlName="consultationDate"
+      [attr.max]="todayIso"
+    />
+    @if (form.controls.consultationDate.value) {
+      <p class="date-confirm">
+        {{ form.controls.consultationDate.value | date: "d 'de' MMMM 'de' y" : 'UTC' }}
+      </p>
+    }
+    @if (form.controls.consultationDate.invalid && form.controls.consultationDate.touched) {
+      <p class="error-text">Este campo es obligatorio.</p>
+    }
+  </div>
+
+  <div class="field">
+    <label for="consultationReason">Motivo de consulta</label>
+    <textarea id="consultationReason" formControlName="consultationReason"></textarea>
+  </div>
+
+  <div class="field">
+    <label for="studies">Estudios</label>
+    <textarea id="studies" formControlName="studies"></textarea>
+  </div>
+
+  <div class="field">
+    <label for="surgery">Cirugía</label>
+    <textarea id="surgery" formControlName="surgery"></textarea>
+  </div>
+
+  @if (errorMessage) {
+    <p class="error-text" role="alert">{{ errorMessage }}</p>
+  }
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary" [disabled]="saving">
+      {{ saving ? 'Guardando...' : 'Guardar consulta' }}
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="saving">
+      Cancelar
+    </button>
+  </div>
+</form>

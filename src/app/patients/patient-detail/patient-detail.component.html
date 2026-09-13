@@ -1,0 +1,230 @@
+<main class="page">
+  <a routerLink="/pacientes" class="back-link">← Volver a pacientes</a>
+
+  @if (loadingPatient()) {
+    <p class="status-text">Cargando información del paciente...</p>
+  } @else if (loadError() && !patient()) {
+    <p class="error-text" role="alert">{{ loadError() }}</p>
+  } @else if (patient(); as currentPatient) {
+    <section class="patient-header">
+      <h1>{{ currentPatient.name }}</h1>
+      <div class="patient-meta-row">
+        <span>Edad: {{ calculateAge(currentPatient.birthDate) }} años</span>
+        @if (currentPatient.healthInsurance) {
+          <span>Obra social: {{ currentPatient.healthInsurance }}</span>
+        }
+      </div>
+
+      @if (!editingPatient()) {
+        <div class="patient-actions">
+          <button type="button" class="btn btn-secondary" (click)="startEditPatient()">
+            Editar datos
+          </button>
+        </div>
+      } @else {
+        <form
+          [formGroup]="patientForm"
+          (ngSubmit)="savePatientEdits()"
+          novalidate
+          class="card edit-patient-form"
+        >
+          <div class="field">
+            <label for="editName">Nombre completo *</label>
+            <input id="editName" type="text" formControlName="name" autocomplete="off" />
+            @if (patientForm.controls.name.invalid && patientForm.controls.name.touched) {
+              <p class="error-text">Este campo es obligatorio.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="editBirthDate">Fecha de nacimiento *</label>
+            <input
+              id="editBirthDate"
+              type="date"
+              formControlName="birthDate"
+              [attr.max]="todayIso"
+            />
+            @if (patientForm.controls.birthDate.value) {
+              <p class="date-confirm">
+                {{ patientForm.controls.birthDate.value | date: "d 'de' MMMM 'de' y" : 'UTC' }}
+              </p>
+            }
+            @if (
+              patientForm.controls.birthDate.hasError('required') &&
+              patientForm.controls.birthDate.touched
+            ) {
+              <p class="error-text">Este campo es obligatorio.</p>
+            }
+            @if (patientForm.controls.birthDate.hasError('futureDate')) {
+              <p class="error-text">La fecha no puede ser futura.</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="editHealthInsurance">Obra social</label>
+            <input
+              id="editHealthInsurance"
+              type="text"
+              formControlName="healthInsurance"
+              autocomplete="off"
+            />
+          </div>
+
+          @if (patientErrorMessage()) {
+            <p class="error-text" role="alert">{{ patientErrorMessage() }}</p>
+          }
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="savingPatient()">
+              {{ savingPatient() ? 'Guardando...' : 'Guardar cambios' }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancelEditPatient()"
+              [disabled]="savingPatient()"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+
+    <section class="consultations-section">
+      <div class="consultations-section-header">
+        <h2>Consultas</h2>
+        @if (!showNewConsultationForm()) {
+          <button type="button" class="btn btn-primary" (click)="openNewConsultationForm()">
+            + Nueva consulta
+          </button>
+        }
+      </div>
+
+      @if (showNewConsultationForm()) {
+        <app-consultation-form
+          [saving]="savingNewConsultation()"
+          [errorMessage]="newConsultationError()"
+          (save)="saveNewConsultation($event)"
+          (cancel)="cancelNewConsultationForm()"
+        />
+      }
+
+      @if (loadingConsultations()) {
+        <p class="status-text">Cargando consultas...</p>
+      } @else if (consultations().length === 0) {
+        <p class="empty-state">Todavía no hay consultas registradas.</p>
+      } @else {
+        <ul class="consultation-list">
+          @for (consultation of consultations(); track consultation.id) {
+            <li>
+              @if (editingConsultationId() === consultation.id) {
+                <app-consultation-form
+                  [consultation]="consultation"
+                  [saving]="savingConsultationEdit()"
+                  [errorMessage]="editConsultationError()"
+                  (save)="saveConsultationEdit(consultation.id, $event)"
+                  (cancel)="cancelEditConsultation()"
+                />
+              } @else {
+                <article class="card consultation-card">
+                  <p class="consultation-date">
+                    {{ consultation.consultationDate | date: 'dd/MM/yyyy' : 'UTC' }}
+                  </p>
+
+                  <p class="consultation-field-label">Motivo de consulta</p>
+                  <p class="consultation-field-value">
+                    {{ consultation.consultationReason || '—' }}
+                  </p>
+
+                  <p class="consultation-field-label">Estudios</p>
+                  <p class="consultation-field-value">{{ consultation.studies || '—' }}</p>
+
+                  <p class="consultation-field-label">Cirugía</p>
+                  <p class="consultation-field-value">{{ consultation.surgery || '—' }}</p>
+
+                  @if (confirmDeleteConsultationId() !== consultation.id) {
+                    <div class="consultation-actions">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        (click)="startEditConsultation(consultation.id)"
+                      >
+                        Editar consulta
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-text"
+                        (click)="requestDeleteConsultation(consultation.id)"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="confirm-box">
+                      <p>¿Estás seguro de que querés eliminar esta consulta?</p>
+                      <div class="consultation-actions">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          (click)="cancelDeleteConsultation()"
+                          [disabled]="deletingConsultation()"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-danger"
+                          (click)="confirmDeleteConsultationAction()"
+                          [disabled]="deletingConsultation()"
+                        >
+                          {{ deletingConsultation() ? 'Eliminando...' : 'Eliminar' }}
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </article>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="danger-zone">
+      @if (!confirmDeletePatient()) {
+        <button type="button" class="btn btn-text" (click)="requestDeletePatient()">
+          Eliminar paciente
+        </button>
+      } @else {
+        <div class="confirm-box">
+          <p>
+            ¿Estás seguro de que querés eliminar a {{ currentPatient.name }}? Esta acción
+            eliminará también todo su historial de consultas y no se puede deshacer.
+          </p>
+          @if (deletePatientError()) {
+            <p class="error-text" role="alert">{{ deletePatientError() }}</p>
+          }
+          <div class="consultation-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancelDeletePatient()"
+              [disabled]="deletingPatient()"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="confirmDeletePatientAction()"
+              [disabled]="deletingPatient()"
+            >
+              {{ deletingPatient() ? 'Eliminando...' : 'Eliminar paciente y consultas' }}
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  }
+</main>

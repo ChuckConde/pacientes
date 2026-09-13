@@ -1,0 +1,9 @@
+.consultation-form {
+  margin-bottom: var(--spacing-4);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}

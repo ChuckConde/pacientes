@@ -1,0 +1,106 @@
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--spacing-3);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.patient-header {
+  margin-bottom: var(--spacing-4);
+}
+
+.patient-header h1 {
+  margin: 0 0 var(--spacing-2);
+}
+
+.patient-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-1) var(--spacing-4);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-3);
+}
+
+.patient-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-4);
+}
+
+.edit-patient-form {
+  margin-bottom: var(--spacing-4);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+}
+
+.consultations-section h2 {
+  margin-bottom: var(--spacing-3);
+}
+
+.consultations-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.consultation-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.consultation-card {
+  padding: var(--spacing-4);
+}
+
+.consultation-date {
+  font-weight: 700;
+  margin-bottom: var(--spacing-2);
+}
+
+.consultation-field-label {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin: var(--spacing-2) 0 0.15rem;
+}
+
+.consultation-field-value {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.consultation-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-3);
+}
+
+.confirm-box {
+  border: 1px solid var(--color-danger);
+  background: #fbecea;
+  border-radius: var(--radius);
+  padding: var(--spacing-3);
+  margin-top: var(--spacing-3);
+}
+
+.confirm-box p {
+  margin: 0 0 var(--spacing-2);
+}
+
+.danger-zone {
+  margin-top: var(--spacing-5);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+}
